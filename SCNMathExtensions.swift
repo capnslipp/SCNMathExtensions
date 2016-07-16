@@ -157,6 +157,19 @@ extension SCNVector3
 		self = self.refracted(normal: normal, refractiveIndex: refractiveIndex)
 	}
 	
+	public mutating func replace(x:Float?=nil, y:Float?=nil, z:Float?=nil) {
+		if let xValue = x { self.x = xValue }
+		if let yValue = y { self.y = yValue }
+		if let zValue = z { self.z = zValue }
+	}
+	public func replacing(x:Float?=nil, y:Float?=nil, z:Float?=nil) -> SCNVector3 {
+		return SCNVector3(
+			x ?? self.x,
+			y ?? self.y,
+			z ?? self.z
+		)
+	}
+	
 	public static func - (a:SCNVector3, b:SCNVector3) -> SCNVector3 { return a.subtracted(by: b) }
 	public func subtracted(by other:SCNVector3) -> SCNVector3 {
 		return (self.toSimd() - other.toSimd()).toSCN()
@@ -181,7 +194,12 @@ extension SCNVector3 : Equatable
 
 extension SCNQuaternion
 {
-	init(from a:SCNVector3, to b:SCNVector3, opposing180Axis:SCNVector3=SCNVector3(0, 1, 0)) {
+	public static let identity:SCNQuaternion = GLKQuaternionIdentity.toSCN()
+	public static let identityFacingVector:SCNVector3 = SCNVector3(0, 0, -1)
+	public static let identityUpVector:SCNVector3 = SCNVector3(0, 1, 0)
+	
+	
+	public init(from a:SCNVector3, to b:SCNVector3, opposing180Axis:SCNVector3=identityUpVector) {
 		let aNormal = a.normalized(), bNormal = b.normalized()
 		let dotProduct = aNormal.dot(by: bNormal)
 		if dotProduct >= 1.0 {
@@ -191,20 +209,17 @@ extension SCNQuaternion
 			self = GLKQuaternionMakeWithAngleAndVector3Axis(Float.pi, opposing180Axis.toGLK()).toSCN()
 		}
 		else {
-			if true {
-				// version 1, from: http://stackoverflow.com/questions/1171849/finding-quaternion-representing-the-rotation-from-one-vector-to-another
-				let xyz = aNormal.crossed(by: bNormal)
-				(self.x, self.y, self.z) = (xyz.x, xyz.y, xyz.z)
-				self.w = sqrt(aNormal.magnitudeSquared() * bNormal.magnitudeSquared()) + dotProduct
-			} else {
-				// version 2, from: https://bitbucket.org/sinbad/ogre/src/9db75e3ba05c/OgreMain/include/OgreVector3.h?fileviewer=file-view-default#OgreVector3.h-651
-				let s = sqrt((1.0 + dotProduct) * 2.0)
-				let sReciprocal = 1.0 / s
-				let xyz = aNormal.crossed(by: bNormal) * sReciprocal
-				(self.x, self.y, self.z) = (xyz.x, xyz.y, xyz.z)
-				self.w = s * 0.5
-			}
+			// from: https://bitbucket.org/sinbad/ogre/src/9db75e3ba05c/OgreMain/include/OgreVector3.h?fileviewer=file-view-default#OgreVector3.h-651
+			// looks to be explained at: http://lolengine.net/blog/2013/09/18/beautiful-maths-quaternion-from-vectors
+			let s = sqrt((1.0 + dotProduct) * 2.0)
+			let xyz = aNormal.crossed(by: bNormal) / s
+			(self.x, self.y, self.z, self.w) = (xyz.x, xyz.y, xyz.z, (s * 0.5))
 		}
+	}
+	
+	
+	public init(angle angle_rad:Float, axis axisVector:SCNVector3) {
+		self = GLKQuaternionMakeWithAngleAndVector3Axis(angle_rad, axisVector.toGLK()).toSCN()
 	}
 	
 	
@@ -216,6 +231,32 @@ extension SCNQuaternion
 	}
 	
 	public func delta(_ other:SCNQuaternion) -> SCNQuaternion {
-		return GLKQuaternionMultiply(GLKQuaternionInvert(self.toGLK()), other.toGLK()).toSCN()
+		return -self * other
+	}
+	
+	public static prefix func - (q:SCNQuaternion) -> SCNQuaternion { return q.inverted() }
+	public func inverted() -> SCNQuaternion {
+		return GLKQuaternionInvert(self.toGLK()).toSCN()
+	}
+	public mutating func invert() {
+		self = self.inverted()
+	}
+	
+	public static func * (a:SCNQuaternion, b:SCNQuaternion) -> SCNQuaternion { return a.multiplied(by: b) }
+	public func multiplied(by other:SCNQuaternion) -> SCNQuaternion {
+		return GLKQuaternionMultiply(self.toGLK(), other.toGLK()).toSCN()
+	}
+	public static func *= (q:inout SCNQuaternion, o:SCNQuaternion) { q.multiply(by: o) }
+	public mutating func multiply(by other:SCNQuaternion) {
+		self = self.multiplied(by: other)
+	}
+	
+	public mutating func normalize() {
+		self = GLKQuaternionNormalize(self.toGLK()).toSCN()
+	}
+	
+	public static func * (q:SCNQuaternion, v:SCNVector3) -> SCNVector3 { return q.rotate(vector: v) }
+	public func rotate(vector:SCNVector3) -> SCNVector3 {
+		return GLKQuaternionRotateVector3(self.toGLK(), vector.toGLK()).toSCN()
 	}
 }
