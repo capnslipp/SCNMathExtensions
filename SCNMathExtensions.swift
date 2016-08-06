@@ -62,11 +62,11 @@ extension SCNVector3
 		self = self.added(to: other)
 	}
 	
-	public func crossed(by other:SCNVector3) -> SCNVector3 {
+	public func crossProduct(_ other:SCNVector3) -> SCNVector3 {
 		return simd.cross(self.toSimd(), other.toSimd()).toSCN()
 	}
-	public mutating func cross(by other:SCNVector3) {
-		self = self.crossed(by: other)
+	public mutating func formCrossProduct(_ other:SCNVector3) {
+		self = self.crossProduct(other)
 	}
 	
 	public static func / (a:SCNVector3, b:SCNVector3) -> SCNVector3 { return a.divided(by: b) }
@@ -86,7 +86,7 @@ extension SCNVector3
 		self = self.divided(by: scalar)
 	}
 	
-	public func dot(by other:SCNVector3) -> Float {
+	public func dotProduct(_ other:SCNVector3) -> Float {
 		return simd.dot(self.toSimd(), other.toSimd())
 	}
 	
@@ -201,7 +201,7 @@ extension SCNQuaternion
 	
 	public init(from a:SCNVector3, to b:SCNVector3, opposing180Axis:SCNVector3=identityUpVector) {
 		let aNormal = a.normalized(), bNormal = b.normalized()
-		let dotProduct = aNormal.dot(by: bNormal)
+		let dotProduct = aNormal.dotProduct(bNormal)
 		if dotProduct >= 1.0 {
 			self = GLKQuaternionIdentity.toSCN()
 		}
@@ -212,7 +212,7 @@ extension SCNQuaternion
 			// from: https://bitbucket.org/sinbad/ogre/src/9db75e3ba05c/OgreMain/include/OgreVector3.h?fileviewer=file-view-default#OgreVector3.h-651
 			// looks to be explained at: http://lolengine.net/blog/2013/09/18/beautiful-maths-quaternion-from-vectors
 			let s = sqrt((1.0 + dotProduct) * 2.0)
-			let xyz = aNormal.crossed(by: bNormal) / s
+			let xyz = aNormal.crossProduct(bNormal) / s
 			(self.x, self.y, self.z, self.w) = (xyz.x, xyz.y, xyz.z, (s * 0.5))
 		}
 	}
