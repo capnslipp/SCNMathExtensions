@@ -90,6 +90,19 @@ extension SCNVector3
 		return simd.dot(self.toSimd(), other.toSimd())
 	}
 	
+	public var isFinite:Bool {
+		return self.x.isFinite && self.y.isFinite && self.z.isFinite
+	}
+	public var isInfinite:Bool {
+		return self.x.isInfinite || self.y.isInfinite || self.z.isInfinite
+	}
+	public var isNaN:Bool {
+		return self.x.isNaN || self.y.isNaN || self.z.isNaN
+	}
+	public var isZero:Bool {
+		return self.x.isZero && self.y.isZero && self.z.isZero
+	}
+	
 	public func magnitude() -> Float {
 		return simd.length(self.toSimd())
 	}
