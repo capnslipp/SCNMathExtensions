@@ -47,6 +47,26 @@ extension GLKQuaternion {
 	}
 }
 
+extension SCNMatrix4 {
+	public func toSimd() -> float4x4 {
+		return float4x4(SCNMatrix4ToMat4(self))
+	}
+	public func toGLK() -> GLKMatrix4 {
+		return SCNMatrix4ToGLKMatrix4(self)
+	}
+}
+extension float4x4 {
+	public func toSCN() -> SCNMatrix4 {
+		return SCNMatrix4FromMat4(self.cmatrix)
+	}
+}
+extension GLKMatrix4 {
+	public func toSCN() -> SCNMatrix4 {
+		return SCNMatrix4FromGLKMatrix4(self)
+	}
+}
+
+
 
 
 // MARK: SCNVector3 Extensions
@@ -271,5 +291,82 @@ extension SCNQuaternion
 	public static func * (q:SCNQuaternion, v:SCNVector3) -> SCNVector3 { return q.rotate(vector: v) }
 	public func rotate(vector:SCNVector3) -> SCNVector3 {
 		return GLKQuaternionRotateVector3(self.toGLK(), vector.toGLK()).toSCN()
+	}
+}
+
+
+
+// MARK: SCNMatrix4 Extensions
+
+extension SCNMatrix4
+{
+	public static let identity:SCNMatrix4 = SCNMatrix4Identity
+	
+	
+	public init(_ m:SCNMatrix4) {
+		self = m
+	}
+	
+	public init(translation:SCNVector3) {
+		self = SCNMatrix4MakeTranslation(translation.x, translation.y, translation.z)
+	}
+	
+	public init(rotationAngle angle:Float, axis:SCNVector3) {
+		self = SCNMatrix4MakeRotation(angle, axis.x, axis.y, axis.z)
+	}
+	
+	public init(scale:SCNVector3) {
+		self = SCNMatrix4MakeScale(scale.x, scale.y, scale.z)
+	}
+	
+	
+	public static prefix func - (m:SCNMatrix4) -> SCNMatrix4 { return m.inverted() }
+	public func inverted() -> SCNMatrix4 {
+		return SCNMatrix4Invert(self)
+	}
+	public mutating func invert() {
+		self = self.inverted()
+	}
+	
+	public var isIdentity:Bool {
+		return SCNMatrix4IsIdentity(self)
+	}
+	
+	public static func * (a:SCNMatrix4, b:SCNMatrix4) -> SCNMatrix4 { return a.multiplied(by: b) }
+	public func multiplied(by other:SCNMatrix4) -> SCNMatrix4 {
+		return SCNMatrix4Mult(self, other)
+	}
+	public static func *= (m:inout SCNMatrix4, o:SCNMatrix4) { m.multiply(by: o) }
+	public mutating func multiply(by other:SCNMatrix4) {
+		self = self.multiplied(by: other)
+	}
+	
+	public func translated(_ translation:SCNVector3) -> SCNMatrix4 {
+		return SCNMatrix4Translate(self, translation.x, translation.y, translation.z)
+	}
+	public mutating func translate(_ translation:SCNVector3) {
+		self = self.translated(translation)
+	}
+	
+	public func scaled(_ scale:SCNVector3) -> SCNMatrix4 {
+		return SCNMatrix4Scale(self, scale.x, scale.y, scale.z)
+	}
+	public mutating func scale(_ scale:SCNVector3) {
+		self = self.scaled(scale)
+	}
+	
+	public func rotated(angle:Float, axis:SCNVector3) -> SCNMatrix4 {
+		return SCNMatrix4Rotate(self, angle, axis.x, axis.y, axis.z)
+	}
+	public mutating func rotate(angle:Float, axis:SCNVector3) {
+		self = self.rotated(angle: angle, axis: axis)
+	}
+}
+
+
+extension SCNMatrix4 : Equatable
+{
+	public static func == (a:SCNMatrix4, b:SCNMatrix4) -> Bool {
+		return SCNMatrix4EqualToMatrix4(a, b)
 	}
 }
