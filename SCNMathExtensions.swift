@@ -73,6 +73,8 @@ extension GLKMatrix4 {
 
 extension SCNVector3
 {
+	public static let zero = SCNVector3Zero
+	
 	public static func + (a:SCNVector3, b:SCNVector3) -> SCNVector3 { return a.added(to: b) }
 	public func added(to other:SCNVector3) -> SCNVector3 {
 		return (self.toSimd() + other.toSimd()).toSCN()
