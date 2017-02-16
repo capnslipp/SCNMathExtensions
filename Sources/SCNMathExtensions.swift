@@ -1,6 +1,6 @@
 // SCNMathExtensions
-// @copyright: Slipp Douglas Thompson
-// @copyright date: The date(s) of version control check-ins corresponding to this file and this project as a whole; or in lieu of, no earlier than July 2016.
+// @author: Slipp Douglas Thompson
+// @license: Public Domain per The Unlicense.  See accompanying LICENSE file or <http://unlicense.org/>.
 
 import SceneKit
 
