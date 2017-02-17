@@ -141,7 +141,7 @@
 				MODULEMAP_FILE = module.modulemap;
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = SCNMathExtensions;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.capnslipp.$(PRODUCT_NAME)";
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				TARGET_NAME = SCNMathExtensions;
@@ -162,7 +162,7 @@
 				MODULEMAP_FILE = module.modulemap;
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = SCNMathExtensions;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.capnslipp.$(PRODUCT_NAME)";
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				TARGET_NAME = SCNMathExtensions;
