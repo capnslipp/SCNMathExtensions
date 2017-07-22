@@ -90,6 +90,9 @@ extension SCNVector3
 	public mutating func formCrossProduct(_ other:SCNVector3) {
 		self = self.crossProduct(other)
 	}
+	public static func crossProductOf(_ a:SCNVector3, _ b:SCNVector3) -> SCNVector3 {
+		return a.crossProduct(b)
+	}
 	
 	public static func / (a:SCNVector3, b:SCNVector3) -> SCNVector3 { return a.divided(by: b) }
 	public func divided(by other:SCNVector3) -> SCNVector3 {
@@ -110,6 +113,9 @@ extension SCNVector3
 	
 	public func dotProduct(_ other:SCNVector3) -> Float {
 		return simd.dot(self.toSimd(), other.toSimd())
+	}
+	public static func dotProductOf(_ a:SCNVector3, _ b:SCNVector3) -> Float {
+		return a.dotProduct(b)
 	}
 	
 	public var isFinite:Bool {
@@ -137,6 +143,9 @@ extension SCNVector3
 	}
 	public mutating func mix(with other:SCNVector3, ratio:Float) {
 		self = self.mixed(with: other, ratio: ratio)
+	}
+	public static func mixOf(_ a:SCNVector3, _ b:SCNVector3, ratio:Float) -> SCNVector3 {
+		return a.mixed(with: b, ratio: ratio)
 	}
 	
 	public static func * (a:SCNVector3, b:SCNVector3) -> SCNVector3 { return a.multiplied(by: b) }
