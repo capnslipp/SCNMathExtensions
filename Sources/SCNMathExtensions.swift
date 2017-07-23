@@ -12,7 +12,11 @@ import simd
 
 extension SCNVector3 {
 	public func toSimd() -> float3 {
-		return SCNVector3ToFloat3(self)
+		#if swift(>=4.0)
+			return float3(self)
+		#else
+			return SCNVector3ToFloat3(self)
+		#endif
 	}
 	public func toGLK() -> GLKVector3 {
 		return SCNVector3ToGLKVector3(self)
@@ -20,7 +24,11 @@ extension SCNVector3 {
 }
 extension float3 {
 	public func toSCN() -> SCNVector3 {
-		return SCNVector3FromFloat3(self)
+		#if swift(>=4.0)
+			return SCNVector3(self)
+		#else
+			return SCNVector3FromFloat3(self)
+		#endif
 	}
 }
 extension GLKVector3 {
@@ -49,7 +57,11 @@ extension GLKQuaternion {
 
 extension SCNMatrix4 {
 	public func toSimd() -> float4x4 {
-		return float4x4(SCNMatrix4ToMat4(self))
+		#if swift(>=4.0)
+			return float4x4(self)
+		#else
+			return float4x4(SCNMatrix4ToMat4(self))
+		#endif
 	}
 	public func toGLK() -> GLKMatrix4 {
 		return SCNMatrix4ToGLKMatrix4(self)
@@ -57,7 +69,11 @@ extension SCNMatrix4 {
 }
 extension float4x4 {
 	public func toSCN() -> SCNMatrix4 {
-		return SCNMatrix4FromMat4(self.cmatrix)
+		#if swift(>=4.0)
+			return SCNMatrix4(self)
+		#else
+			return SCNMatrix4FromMat4(self.cmatrix)
+		#endif
 	}
 }
 extension GLKMatrix4 {
