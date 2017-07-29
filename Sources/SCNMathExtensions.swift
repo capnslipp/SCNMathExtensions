@@ -87,9 +87,14 @@ extension GLKMatrix4 {
 
 // MARK: SCNVector3 Extensions
 
+// NOTE: Methods below are ordered alphabetically (by base operation name).
+// 	Decided that this is better than grouping by category because those groupings are somewhat subjective, change with each Swift version (if based on protocols), and this just seemed simpler.  Maybe I'll reorg this in the future though.
 extension SCNVector3
 {
 	public static let zero = SCNVector3Zero
+	
+	
+	// MARK: Add
 	
 	public static func + (a:SCNVector3, b:SCNVector3) -> SCNVector3 { return a.added(to: b) }
 	public func added(to other:SCNVector3) -> SCNVector3 {
@@ -100,6 +105,8 @@ extension SCNVector3
 		self = self.added(to: other)
 	}
 	
+	// MARK: Cross Product
+	
 	public func crossProduct(_ other:SCNVector3) -> SCNVector3 {
 		return simd.cross(self.toSimd(), other.toSimd()).toSCN()
 	}
@@ -109,6 +116,8 @@ extension SCNVector3
 	public static func crossProductOf(_ a:SCNVector3, _ b:SCNVector3) -> SCNVector3 {
 		return a.crossProduct(b)
 	}
+	
+	// MARK: Divide
 	
 	public static func / (a:SCNVector3, b:SCNVector3) -> SCNVector3 { return a.divided(by: b) }
 	public func divided(by other:SCNVector3) -> SCNVector3 {
@@ -127,12 +136,16 @@ extension SCNVector3
 		self = self.divided(by: scalar)
 	}
 	
+	// MARK: Dot Product
+	
 	public func dotProduct(_ other:SCNVector3) -> Float {
 		return simd.dot(self.toSimd(), other.toSimd())
 	}
 	public static func dotProductOf(_ a:SCNVector3, _ b:SCNVector3) -> Float {
 		return a.dotProduct(b)
 	}
+	
+	// MARK: Is… Flags
 	
 	public var isFinite:Bool {
 		return self.x.isFinite && self.y.isFinite && self.z.isFinite
@@ -147,12 +160,16 @@ extension SCNVector3
 		return self.x.isZero && self.y.isZero && self.z.isZero
 	}
 	
+	// MARK: Magnitude
+	
 	public func magnitude() -> Float {
 		return simd.length(self.toSimd())
 	}
 	public func magnitudeSquared() -> Float {
 		return simd.length_squared(self.toSimd())
 	}
+	
+	// MARK: Mix
 	
 	public func mixed(with other:SCNVector3, ratio:Float) -> SCNVector3 {
 		return simd.mix(self.toSimd(), other.toSimd(), t: ratio).toSCN()
@@ -163,6 +180,8 @@ extension SCNVector3
 	public static func mixOf(_ a:SCNVector3, _ b:SCNVector3, ratio:Float) -> SCNVector3 {
 		return a.mixed(with: b, ratio: ratio)
 	}
+	
+	// MARK: Multiply
 	
 	public static func * (a:SCNVector3, b:SCNVector3) -> SCNVector3 { return a.multiplied(by: b) }
 	public func multiplied(by other:SCNVector3) -> SCNVector3 {
@@ -181,6 +200,8 @@ extension SCNVector3
 		self = self.multiplied(by: scalar)
 	}
 	
+	// MARK: Invert
+	
 	public static prefix func - (v:SCNVector3) -> SCNVector3 { return v.inverted() }
 	public func inverted() -> SCNVector3 {
 		return (float3(0) - self.toSimd()).toSCN()
@@ -189,12 +210,16 @@ extension SCNVector3
 		self = self.inverted()
 	}
 	
+	// MARK: Normalize
+	
 	public func normalized() -> SCNVector3 {
 		return simd.normalize(self.toSimd()).toSCN()
 	}
 	public mutating func normalize() {
 		self = self.normalized()
 	}
+	
+	// MARK: Project
 	
 	public func projected(onto other:SCNVector3) -> SCNVector3 {
 		return simd.project(self.toSimd(), other.toSimd()).toSCN()
@@ -203,6 +228,8 @@ extension SCNVector3
 		self = self.projected(onto: other)
 	}
 	
+	// MARK: Reflect
+	
 	public func reflected(normal:SCNVector3) -> SCNVector3 {
 		return simd.reflect(self.toSimd(), n: normal.toSimd()).toSCN()
 	}
@@ -210,12 +237,16 @@ extension SCNVector3
 		self = self.reflected(normal: normal)
 	}
 	
+	// MARK: Refract
+	
 	public func refracted(normal:SCNVector3, refractiveIndex:Float) -> SCNVector3 {
 		return simd.refract(self.toSimd(), n: normal.toSimd(), eta: refractiveIndex).toSCN()
 	}
 	public mutating func refract(normal:SCNVector3, refractiveIndex:Float) {
 		self = self.refracted(normal: normal, refractiveIndex: refractiveIndex)
 	}
+	
+	// MARK: Replace
 	
 	public mutating func replace(x:Float?=nil, y:Float?=nil, z:Float?=nil) {
 		if let xValue = x { self.x = xValue }
@@ -229,6 +260,8 @@ extension SCNVector3
 			z ?? self.z
 		)
 	}
+	
+	// MARK: Subtract
 	
 	public static func - (a:SCNVector3, b:SCNVector3) -> SCNVector3 { return a.subtracted(by: b) }
 	public func subtracted(by other:SCNVector3) -> SCNVector3 {
@@ -252,6 +285,8 @@ extension SCNVector3 : Equatable
 
 // MARK: SCNQuaternion Extensions
 
+// NOTE: Methods below are ordered alphabetically (by base operation name).
+// 	Decided that this is better than grouping by category because those groupings are somewhat subjective, change with each Swift version (if based on protocols), and this just seemed simpler.  Maybe I'll reorg this in the future though.
 extension SCNQuaternion
 {
 	public static let identity:SCNQuaternion = GLKQuaternionIdentity.toSCN()
@@ -283,6 +318,8 @@ extension SCNQuaternion
 	}
 	
 	
+	// MARK: Angle-Axis
+	
 	public func angleAxis() -> (Float, SCNVector3) {
 		let self_glk = self.toGLK()
 		let angle = GLKQuaternionAngle(self_glk)
@@ -290,9 +327,13 @@ extension SCNQuaternion
 		return (angle, axis)
 	}
 	
+	// MARK: Delta
+	
 	public func delta(_ other:SCNQuaternion) -> SCNQuaternion {
 		return -self * other
 	}
+	
+	// MARK: Invert
 	
 	public static prefix func - (q:SCNQuaternion) -> SCNQuaternion { return q.inverted() }
 	public func inverted() -> SCNQuaternion {
@@ -301,6 +342,8 @@ extension SCNQuaternion
 	public mutating func invert() {
 		self = self.inverted()
 	}
+	
+	// MARK: Multiply
 	
 	public static func * (a:SCNQuaternion, b:SCNQuaternion) -> SCNQuaternion { return a.multiplied(by: b) }
 	public func multiplied(by other:SCNQuaternion) -> SCNQuaternion {
@@ -311,9 +354,13 @@ extension SCNQuaternion
 		self = self.multiplied(by: other)
 	}
 	
+	// MARK: Normalize
+	
 	public mutating func normalize() {
 		self = GLKQuaternionNormalize(self.toGLK()).toSCN()
 	}
+	
+	// MARK: Rotate
 	
 	public static func * (q:SCNQuaternion, v:SCNVector3) -> SCNVector3 { return q.rotate(vector: v) }
 	public func rotate(vector:SCNVector3) -> SCNVector3 {
@@ -325,6 +372,8 @@ extension SCNQuaternion
 
 // MARK: SCNMatrix4 Extensions
 
+// NOTE: Methods below are ordered alphabetically (by base operation name).
+// 	Decided that this is better than grouping by category because those groupings are somewhat subjective, change with each Swift version (if based on protocols), and this just seemed simpler.  Maybe I'll reorg this in the future though.
 extension SCNMatrix4
 {
 	public static let identity:SCNMatrix4 = SCNMatrix4Identity
@@ -347,6 +396,8 @@ extension SCNMatrix4
 	}
 	
 	
+	// MARK: Invert
+	
 	public static prefix func - (m:SCNMatrix4) -> SCNMatrix4 { return m.inverted() }
 	public func inverted() -> SCNMatrix4 {
 		return SCNMatrix4Invert(self)
@@ -355,9 +406,13 @@ extension SCNMatrix4
 		self = self.inverted()
 	}
 	
+	// MARK: Is… Flags
+	
 	public var isIdentity:Bool {
 		return SCNMatrix4IsIdentity(self)
 	}
+	
+	// MARK: Multiply
 	
 	public static func * (a:SCNMatrix4, b:SCNMatrix4) -> SCNMatrix4 { return a.multiplied(by: b) }
 	public func multiplied(by other:SCNMatrix4) -> SCNMatrix4 {
@@ -368,6 +423,8 @@ extension SCNMatrix4
 		self = self.multiplied(by: other)
 	}
 	
+	// MARK: Translate
+	
 	public func translated(_ translation:SCNVector3) -> SCNMatrix4 {
 		return SCNMatrix4Translate(self, translation.x, translation.y, translation.z)
 	}
@@ -375,12 +432,16 @@ extension SCNMatrix4
 		self = self.translated(translation)
 	}
 	
+	// MARK: Scale
+	
 	public func scaled(_ scale:SCNVector3) -> SCNMatrix4 {
 		return SCNMatrix4Scale(self, scale.x, scale.y, scale.z)
 	}
 	public mutating func scale(_ scale:SCNVector3) {
 		self = self.scaled(scale)
 	}
+	
+	// MARK: Rotate
 	
 	public func rotated(angle:Float, axis:SCNVector3) -> SCNMatrix4 {
 		return SCNMatrix4Rotate(self, angle, axis.x, axis.y, axis.z)
