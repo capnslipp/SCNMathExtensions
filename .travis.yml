@@ -1,0 +1,4 @@
+language: swift
+xcode_project: SCNMathExtensions.xcodeproj
+xcode_scheme: "SCNMathExtensions - Swift 4"
+osx_image: xcode9.2
