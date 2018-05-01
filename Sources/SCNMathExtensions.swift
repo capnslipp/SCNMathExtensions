@@ -8,14 +8,36 @@ import simd
 
 
 
+/// On macOS, SceneKit types use `CGFloat`, which can either be a 32-bit `Float` or a 64-bit `Double`; however, on iOS/tvOS/watchOS, SceneKit types just use `Float`.
+/// Because of this, we need to do some finagling to get these extension to work on all platform— and a `SCNFloat` typealias is the cleanest way I found to minimize the amount of `#if` junk below.
+#if os(macOS)
+	public typealias SCNFloat = CGFloat
+	#if (arch(x86_64))
+		public typealias SCNSimdFloat3 = double3
+	#else
+		public typealias SCNSimdFloat3 = float3
+	#endif
+#else
+	public typealias SCNFloat = Float
+	public typealias SCNSimdFloat3 = float3
+	
+	extension SCNFloat
+	{
+		typealias NativeType = Float
+		var native:NativeType { return self }
+	}
+#endif
+
+
+
 // MARK: Type Conversions
 
 extension SCNVector3 {
-	public func toSimd() -> float3 {
+	public func toSimd() -> SCNSimdFloat3 {
 		#if swift(>=4.0)
-			return float3(self)
+			return SCNSimdFloat3(self)
 		#else
-			return SCNVector3ToFloat3(self)
+			return SCNSimdFloat3(SCNFloat.NativeType(self.x), SCNFloat.NativeType(self.y), SCNFloat.NativeType(self.z))
 		#endif
 	}
 	public func toGLK() -> GLKVector3 {
@@ -27,7 +49,16 @@ extension float3 {
 		#if swift(>=4.0)
 			return SCNVector3(self)
 		#else
-			return SCNVector3FromFloat3(self)
+			return SCNVector3(self.x, self.y, self.z)
+		#endif
+	}
+}
+extension double3 {
+	public func toSCN() -> SCNVector3 {
+		#if swift(>=4.0)
+			return SCNVector3(self)
+		#else
+			return SCNVector3(SCNFloat(self.x), SCNFloat(self.y), SCNFloat(self.z))
 		#endif
 	}
 }
@@ -39,10 +70,10 @@ extension GLKVector3 {
 
 extension SCNQuaternion {
 	public var q:(Float,Float,Float,Float) {
-		return (self.x, self.y, self.z, self.w)
+		return (Float(self.x), Float(self.y), Float(self.z), Float(self.w))
 	}
 	public init(q:(Float,Float,Float,Float)) {
-		self.init(x: q.0, y: q.1, z: q.2, w: q.3)
+		self.init(x: SCNFloat(q.0), y: SCNFloat(q.1), z: SCNFloat(q.2), w: SCNFloat(q.3))
 	}
 	
 	public func toGLK() -> GLKQuaternion {
@@ -123,25 +154,25 @@ extension SCNVector3
 	public func divided(by other:SCNVector3) -> SCNVector3 {
 		return (self.toSimd() / other.toSimd()).toSCN()
 	}
-	public static func / (a:SCNVector3, b:Float) -> SCNVector3 { return a.divided(by: b) }
-	public func divided(by scalar:Float) -> SCNVector3 {
-		return (self.toSimd() * recip(scalar)).toSCN()
+	public static func / (a:SCNVector3, b:SCNFloat) -> SCNVector3 { return a.divided(by: b) }
+	public func divided(by scalar:SCNFloat) -> SCNVector3 {
+		return (self.toSimd() * recip(scalar.native)).toSCN()
 	}
 	public static func /= (v:inout SCNVector3, o:SCNVector3) { v.divide(by: o) }
 	public mutating func divide(by other:SCNVector3) {
 		self = self.divided(by: other)
 	}
-	public static func /= (v:inout SCNVector3, o:Float) { v.divide(by: o) }
-	public mutating func divide(by scalar:Float) {
+	public static func /= (v:inout SCNVector3, o:SCNFloat) { v.divide(by: o) }
+	public mutating func divide(by scalar:SCNFloat) {
 		self = self.divided(by: scalar)
 	}
 	
 	// MARK: Dot Product
 	
-	public func dotProduct(_ other:SCNVector3) -> Float {
-		return simd.dot(self.toSimd(), other.toSimd())
+	public func dotProduct(_ other:SCNVector3) -> SCNFloat {
+		return SCNFloat(simd.dot(self.toSimd(), other.toSimd()))
 	}
-	public static func dotProductOf(_ a:SCNVector3, _ b:SCNVector3) -> Float {
+	public static func dotProductOf(_ a:SCNVector3, _ b:SCNVector3) -> SCNFloat {
 		return a.dotProduct(b)
 	}
 	
@@ -162,22 +193,22 @@ extension SCNVector3
 	
 	// MARK: Magnitude
 	
-	public func magnitude() -> Float {
-		return simd.length(self.toSimd())
+	public func magnitude() -> SCNFloat {
+		return SCNFloat(simd.length(self.toSimd()))
 	}
-	public func magnitudeSquared() -> Float {
-		return simd.length_squared(self.toSimd())
+	public func magnitudeSquared() -> SCNFloat {
+		return SCNFloat(simd.length_squared(self.toSimd()))
 	}
 	
 	// MARK: Mix
 	
-	public func mixed(with other:SCNVector3, ratio:Float) -> SCNVector3 {
-		return simd.mix(self.toSimd(), other.toSimd(), t: ratio).toSCN()
+	public func mixed(with other:SCNVector3, ratio:SCNFloat) -> SCNVector3 {
+		return simd.mix(self.toSimd(), other.toSimd(), t: ratio.native).toSCN()
 	}
-	public mutating func mix(with other:SCNVector3, ratio:Float) {
+	public mutating func mix(with other:SCNVector3, ratio:SCNFloat) {
 		self = self.mixed(with: other, ratio: ratio)
 	}
-	public static func mixOf(_ a:SCNVector3, _ b:SCNVector3, ratio:Float) -> SCNVector3 {
+	public static func mixOf(_ a:SCNVector3, _ b:SCNVector3, ratio:SCNFloat) -> SCNVector3 {
 		return a.mixed(with: b, ratio: ratio)
 	}
 	
@@ -187,16 +218,16 @@ extension SCNVector3
 	public func multiplied(by other:SCNVector3) -> SCNVector3 {
 		return (self.toSimd() * other.toSimd()).toSCN()
 	}
-	public static func * (a:SCNVector3, b:Float) -> SCNVector3 { return a.multiplied(by: b) }
-	public func multiplied(by scalar:Float) -> SCNVector3 {
-		return (self.toSimd() * scalar).toSCN()
+	public static func * (a:SCNVector3, b:SCNFloat) -> SCNVector3 { return a.multiplied(by: b) }
+	public func multiplied(by scalar:SCNFloat) -> SCNVector3 {
+		return (self.toSimd() * scalar.native).toSCN()
 	}
 	public static func *= (v:inout SCNVector3, o:SCNVector3) { v.multiply(by: o) }
 	public mutating func multiply(by other:SCNVector3) {
 		self = self.multiplied(by: other)
 	}
-	public static func *= (v:inout SCNVector3, o:Float) { v.multiply(by: o) }
-	public mutating func multiply(by scalar:Float) {
+	public static func *= (v:inout SCNVector3, o:SCNFloat) { v.multiply(by: o) }
+	public mutating func multiply(by scalar:SCNFloat) {
 		self = self.multiplied(by: scalar)
 	}
 	
@@ -204,7 +235,7 @@ extension SCNVector3
 	
 	public static prefix func - (v:SCNVector3) -> SCNVector3 { return v.inverted() }
 	public func inverted() -> SCNVector3 {
-		return (float3(0) - self.toSimd()).toSCN()
+		return (SCNSimdFloat3(0) - self.toSimd()).toSCN()
 	}
 	public mutating func invert() {
 		self = self.inverted()
@@ -239,21 +270,21 @@ extension SCNVector3
 	
 	// MARK: Refract
 	
-	public func refracted(normal:SCNVector3, refractiveIndex:Float) -> SCNVector3 {
-		return simd.refract(self.toSimd(), n: normal.toSimd(), eta: refractiveIndex).toSCN()
+	public func refracted(normal:SCNVector3, refractiveIndex:SCNFloat) -> SCNVector3 {
+		return simd.refract(self.toSimd(), n: normal.toSimd(), eta: refractiveIndex.native).toSCN()
 	}
-	public mutating func refract(normal:SCNVector3, refractiveIndex:Float) {
+	public mutating func refract(normal:SCNVector3, refractiveIndex:SCNFloat) {
 		self = self.refracted(normal: normal, refractiveIndex: refractiveIndex)
 	}
 	
 	// MARK: Replace
 	
-	public mutating func replace(x:Float?=nil, y:Float?=nil, z:Float?=nil) {
+	public mutating func replace(x:SCNFloat?=nil, y:SCNFloat?=nil, z:SCNFloat?=nil) {
 		if let xValue = x { self.x = xValue }
 		if let yValue = y { self.y = yValue }
 		if let zValue = z { self.z = zValue }
 	}
-	public func replacing(x:Float?=nil, y:Float?=nil, z:Float?=nil) -> SCNVector3 {
+	public func replacing(x:SCNFloat?=nil, y:SCNFloat?=nil, z:SCNFloat?=nil) -> SCNVector3 {
 		return SCNVector3(
 			x ?? self.x,
 			y ?? self.y,
@@ -300,7 +331,7 @@ extension SCNQuaternion
 		if dotProduct >= 1.0 {
 			self = GLKQuaternionIdentity.toSCN()
 		}
-		else if dotProduct < (-1.0 + Float.leastNormalMagnitude) {
+		else if dotProduct < (-1.0 + SCNFloat.leastNormalMagnitude) {
 			self = GLKQuaternionMakeWithAngleAndVector3Axis(Float.pi, opposing180Axis.toGLK()).toSCN()
 		}
 		else {
@@ -313,17 +344,17 @@ extension SCNQuaternion
 	}
 	
 	
-	public init(angle angle_rad:Float, axis axisVector:SCNVector3) {
-		self = GLKQuaternionMakeWithAngleAndVector3Axis(angle_rad, axisVector.toGLK()).toSCN()
+	public init(angle angle_rad:SCNFloat, axis axisVector:SCNVector3) {
+		self = GLKQuaternionMakeWithAngleAndVector3Axis(Float(angle_rad), axisVector.toGLK()).toSCN()
 	}
 	
 	
 	// MARK: Angle-Axis
 	
-	public func angleAxis() -> (Float, SCNVector3) {
+	public func angleAxis() -> (SCNFloat, SCNVector3) {
 		let self_glk = self.toGLK()
-		let angle = GLKQuaternionAngle(self_glk)
-		let axis = SCNVector3FromGLKVector3(GLKQuaternionAxis(self_glk))
+		let angle = SCNFloat(GLKQuaternionAngle(self_glk))
+		let axis = GLKQuaternionAxis(self_glk).toSCN()
 		return (angle, axis)
 	}
 	
@@ -387,7 +418,7 @@ extension SCNMatrix4
 		self = SCNMatrix4MakeTranslation(translation.x, translation.y, translation.z)
 	}
 	
-	public init(rotationAngle angle:Float, axis:SCNVector3) {
+	public init(rotationAngle angle:SCNFloat, axis:SCNVector3) {
 		self = SCNMatrix4MakeRotation(angle, axis.x, axis.y, axis.z)
 	}
 	
@@ -443,10 +474,10 @@ extension SCNMatrix4
 	
 	// MARK: Rotate
 	
-	public func rotated(angle:Float, axis:SCNVector3) -> SCNMatrix4 {
+	public func rotated(angle:SCNFloat, axis:SCNVector3) -> SCNMatrix4 {
 		return SCNMatrix4Rotate(self, angle, axis.x, axis.y, axis.z)
 	}
-	public mutating func rotate(angle:Float, axis:SCNVector3) {
+	public mutating func rotate(angle:SCNFloat, axis:SCNVector3) {
 		self = self.rotated(angle: angle, axis: axis)
 	}
 }
