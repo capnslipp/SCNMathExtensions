@@ -339,7 +339,7 @@ extension SCNQuaternion
 			// looks to be explained at: http://lolengine.net/blog/2013/09/18/beautiful-maths-quaternion-from-vectors
 			let s = sqrt((1.0 + dotProduct) * 2.0)
 			let xyz = aNormal.crossProduct(bNormal) / s
-			(self.x, self.y, self.z, self.w) = (xyz.x, xyz.y, xyz.z, (s * 0.5))
+			self = SCNQuaternion(xyz.x, xyz.y, xyz.z, (s * 0.5))
 		}
 	}
 	
