@@ -233,7 +233,7 @@ extension SCNVector3
 	
 	public static prefix func - (v:SCNVector3) -> SCNVector3 { return v.inverted() }
 	public func inverted() -> SCNVector3 {
-		return (SCNSimdFloat3(0) - self.toSimd()).toSCN()
+		return (SCNSimdFloat3(0, 0, 0) - self.toSimd()).toSCN()
 	}
 	public mutating func invert() {
 		self = self.inverted()

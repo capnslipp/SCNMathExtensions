@@ -8,26 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		FA9EA0271F242D2E00150320 /* SCNMathExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* SCNMathExtensions.swift */; };
-		OBJ_18 /* SCNMathExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* SCNMathExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		FA4814A71E555E7300FC4BD4 /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		FA9EA02C1F242D2E00150320 /* SCNMathExtensions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SCNMathExtensions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		OBJ_12 /* SCNMathExtensions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SCNMathExtensions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_9 /* SCNMathExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNMathExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		FA9EA0281F242D2E00150320 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		OBJ_19 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
@@ -47,7 +38,6 @@
 		OBJ_11 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_12 /* SCNMathExtensions.framework */,
 				FA9EA02C1F242D2E00150320 /* SCNMathExtensions.framework */,
 			);
 			name = Products;
@@ -84,9 +74,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		FA9EA0251F242D2E00150320 /* SCNMathExtensions - Swift 4 */ = {
+		FA9EA0251F242D2E00150320 /* SCNMathExtensions */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FA9EA0291F242D2E00150320 /* Build configuration list for PBXNativeTarget "SCNMathExtensions - Swift 4" */;
+			buildConfigurationList = FA9EA0291F242D2E00150320 /* Build configuration list for PBXNativeTarget "SCNMathExtensions" */;
 			buildPhases = (
 				FA9EA0261F242D2E00150320 /* Sources */,
 				FA9EA0281F242D2E00150320 /* Frameworks */,
@@ -95,25 +85,9 @@
 			);
 			dependencies = (
 			);
-			name = "SCNMathExtensions - Swift 4";
+			name = SCNMathExtensions;
 			productName = SCNMathExtensions;
 			productReference = FA9EA02C1F242D2E00150320 /* SCNMathExtensions.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		OBJ_13 /* SCNMathExtensions - Swift 3 */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_14 /* Build configuration list for PBXNativeTarget "SCNMathExtensions - Swift 3" */;
-			buildPhases = (
-				OBJ_17 /* Sources */,
-				OBJ_19 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "SCNMathExtensions - Swift 3";
-			productName = SCNMathExtensions;
-			productReference = OBJ_12 /* SCNMathExtensions.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -123,17 +97,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0930;
-				TargetAttributes = {
-					OBJ_13 = {
-						LastSwiftMigration = 0900;
-					};
-				};
 			};
 			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "SCNMathExtensions" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = OBJ_5;
@@ -141,8 +111,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				OBJ_13 /* SCNMathExtensions - Swift 3 */,
-				FA9EA0251F242D2E00150320 /* SCNMathExtensions - Swift 4 */,
+				FA9EA0251F242D2E00150320 /* SCNMathExtensions */,
 			);
 		};
 /* End PBXProject section */
@@ -153,14 +122,6 @@
 			buildActionMask = 0;
 			files = (
 				FA9EA0271F242D2E00150320 /* SCNMathExtensions.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		OBJ_17 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 0;
-			files = (
-				OBJ_18 /* SCNMathExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,7 +146,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.capnslipp.$(PRODUCT_NAME)";
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
 				TARGET_NAME = SCNMathExtensions;
 			};
 			name = Debug;
@@ -208,53 +168,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.capnslipp.$(PRODUCT_NAME)";
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
-				TARGET_NAME = SCNMathExtensions;
-			};
-			name = Release;
-		};
-		OBJ_15 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
-				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = SCNMathExtensions.xcodeproj/SCNMathExtensions_Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
-				MODULEMAP_FILE = module.modulemap;
-				OTHER_LDFLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.capnslipp.$(PRODUCT_NAME)";
-				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SWIFT_VERSION = 3.0;
-				TARGET_NAME = SCNMathExtensions;
-			};
-			name = Debug;
-		};
-		OBJ_16 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
-				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = SCNMathExtensions.xcodeproj/SCNMathExtensions_Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
-				MODULEMAP_FILE = module.modulemap;
-				OTHER_LDFLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.capnslipp.$(PRODUCT_NAME)";
-				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SWIFT_VERSION = 3.0;
 				TARGET_NAME = SCNMathExtensions;
 			};
 			name = Release;
@@ -302,6 +215,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator macosx";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = SWIFT_PACKAGE;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				USE_HEADERMAP = NO;
 			};
 			name = Debug;
@@ -346,6 +260,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator macosx";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = SWIFT_PACKAGE;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 5.0;
 				USE_HEADERMAP = NO;
 			};
 			name = Release;
@@ -353,20 +268,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		FA9EA0291F242D2E00150320 /* Build configuration list for PBXNativeTarget "SCNMathExtensions - Swift 4" */ = {
+		FA9EA0291F242D2E00150320 /* Build configuration list for PBXNativeTarget "SCNMathExtensions" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FA9EA02A1F242D2E00150320 /* Debug */,
 				FA9EA02B1F242D2E00150320 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		OBJ_14 /* Build configuration list for PBXNativeTarget "SCNMathExtensions - Swift 3" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				OBJ_15 /* Debug */,
-				OBJ_16 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
