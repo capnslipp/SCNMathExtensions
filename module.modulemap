@@ -1,5 +1,0 @@
-framework module SCNMathExtensions {
-	export *
-	
-	link framework "SceneKit"
-}
