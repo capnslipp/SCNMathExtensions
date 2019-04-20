@@ -1,4 +1,4 @@
-// swift-tools-version:5.0
+// swift-tools-version:4.0
 import PackageDescription
 
 let package = Package(
@@ -11,9 +11,8 @@ let package = Package(
 		.target(name: "SCNMathExtensions", dependencies: [], path: "Sources/"),
 	],
 	swiftLanguageVersions: [
-		.version("3"),
-		.version("4"),
-		.version("4.2"),
-		.version("5"),
+		3,
+		4,
+		5,
 	]
 )
