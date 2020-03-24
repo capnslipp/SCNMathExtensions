@@ -13,6 +13,7 @@ Pod::Spec.new do |s|
   s.author = { 'capnslipp' => 'SCNMathExtensions@capnslipp.com' }
   s.source = { :git => 'https://github.com/capnslipp/SCNMathExtensions.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/capnslipp'
+  s.swift_versions = ['3.0', '4.0', '4.2', '5.0']
   s.ios.deployment_target = '8.0'
   s.source_files = 'Sources/**/*'
   s.frameworks = 'SceneKit'
