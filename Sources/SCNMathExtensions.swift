@@ -11,7 +11,7 @@ import simd
 /// On macOS, SceneKit types use `CGFloat`, which can either be a 32-bit `Float` or a 64-bit `Double`; however, on iOS/tvOS/watchOS, SceneKit types just use `Float`.
 /// Because of this, we need to do some finagling to get these extension to work on all platform— and a `SCNFloat` typealias is the cleanest way I found to minimize the amount of `#if` junk below.
 #if os(macOS)
-	#if (arch(x86_64))
+	#if (arch(x86_64) || arch(arm64))
 		public typealias SCNSimdFloat3 = simd_double3
 		public typealias SCNSimdFloat4 = simd_double4
 		public typealias SCNSimdQuat = simd_quatd
@@ -20,6 +20,8 @@ import simd
 		public typealias SCNSimdFloat4 = simd_float4
 		public typealias SCNSimdQuat = simd_quatf
 	#endif
+	
+	// On macOS, `SCNFloat` is a `CGFloat`, which declares `typealias NativeType` & `var native`.
 #else
 	public typealias SCNSimdFloat3 = simd_float3
 	public typealias SCNSimdFloat4 = simd_float4
