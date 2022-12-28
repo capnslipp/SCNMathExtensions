@@ -14,13 +14,16 @@ import simd
 	#if (arch(x86_64))
 		public typealias SCNSimdFloat3 = double3
 		public typealias SCNSimdFloat4 = double4
+		public typealias SCNSimdQuat = simd_quatd
 	#else
 		public typealias SCNSimdFloat3 = float3
 		public typealias SCNSimdFloat4 = float4
+		public typealias SCNSimdQuat = simd_quatf
 	#endif
 #else
 	public typealias SCNSimdFloat3 = float3
 	public typealias SCNSimdFloat4 = float4
+	public typealias SCNSimdQuat = simd_quatf
 	
 	extension SCNFloat
 	{
@@ -77,11 +80,11 @@ extension SCNQuaternion {
 		self.init(x: SCNFloat(q.0), y: SCNFloat(q.1), z: SCNFloat(q.2), w: SCNFloat(q.3))
 	}
 	
-	public func toSimd() -> simd_quatf {
+	public func toSimd() -> SCNSimdQuat {
 		#if swift(>=4.0)
-			return simd_quatf(vector: SCNSimdFloat4(self))
+			return SCNSimdQuat(vector: SCNSimdFloat4(self))
 		#else
-			return simd_quatf(vector: SCNSimdFloat4(SCNFloat.NativeType(self.x), SCNFloat.NativeType(self.y), SCNFloat.NativeType(self.z), SCNFloat.NativeType(self.w)))
+			return SCNSimdQuat(vector: SCNSimdFloat4(SCNFloat.NativeType(self.x), SCNFloat.NativeType(self.y), SCNFloat.NativeType(self.z), SCNFloat.NativeType(self.w)))
 		#endif
 	}
 	public func toGLK() -> GLKQuaternion {
@@ -94,6 +97,15 @@ extension simd_quatf {
 			return SCNQuaternion(self.vector)
 		#else
 			return SCNQuaternion(self.vector.x, self.vector.y, self.vector.z, self.vector.w)
+		#endif
+	}
+}
+extension simd_quatd {
+	public func toSCN() -> SCNQuaternion {
+		#if swift(>=4.0)
+			return SCNQuaternion(self.vector)
+		#else
+			return SCNQuaternion(SCNFloat(self.vector.x), SCNFloat(self.vector.y), SCNFloat(self.vector.z), SCNFloat(self.vector.w))
 		#endif
 	}
 }

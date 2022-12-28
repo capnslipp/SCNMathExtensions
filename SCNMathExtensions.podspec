@@ -1,6 +1,11 @@
 Pod::Spec.new do |s|
   s.name = 'SCNMathExtensions'
-  s.version = '1.4.1'
+  s.version = ->{
+    Dir.chdir(__dir__) do
+      semver_regex = /\d+\.\d+\.\d+(?:-[\w\.]+)?(?:\+[\w\.]+)?/
+      return `xcodebuild -showBuildSettings 2>/dev/null`.match(/CURRENT_PROJECT_VERSION = (#{semver_regex})/)[1]
+    end
+  }.call
   s.summary = 'A Swift µ-Library of Math Extensions for SCNVector3, SCNQuaternion, SCNMatrix4'
   s.description = "A Swift micro-library that provides commonplace math extensions for SceneKit's SCNVector3, SCNQuaternion, & SCNMatrix4 types, and bridging to/from GLKVector3, simd.float3, GLKQuaternion, GLKMatrix4, & simd.float4x4."
   s.homepage = 'https://github.com/capnslipp/SCNMathExtensions'
