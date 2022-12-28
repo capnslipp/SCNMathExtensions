@@ -44,9 +44,11 @@ extension SCNVector3 {
 			return SCNSimdFloat3(SCNFloat.NativeType(self.x), SCNFloat.NativeType(self.y), SCNFloat.NativeType(self.z))
 		#endif
 	}
-	public func toGLK() -> GLKVector3 {
-		return SCNVector3ToGLKVector3(self)
-	}
+	#if !os(watchOS)
+		public func toGLK() -> GLKVector3 {
+			return SCNVector3ToGLKVector3(self)
+		}
+	#endif // !watchOS
 }
 extension simd_float3 {
 	public func toSCN() -> SCNVector3 {
@@ -66,11 +68,13 @@ extension simd_double3 {
 		#endif
 	}
 }
-extension GLKVector3 {
-	public func toSCN() -> SCNVector3 {
-		return SCNVector3FromGLKVector3(self)
+#if !os(watchOS)
+	extension GLKVector3 {
+		public func toSCN() -> SCNVector3 {
+			return SCNVector3FromGLKVector3(self)
+		}
 	}
-}
+#endif // !watchOS
 
 extension SCNQuaternion {
 	public var q:(Float,Float,Float,Float) {
@@ -87,9 +91,11 @@ extension SCNQuaternion {
 			return SCNSimdQuat(vector: SCNSimdFloat4(SCNFloat.NativeType(self.x), SCNFloat.NativeType(self.y), SCNFloat.NativeType(self.z), SCNFloat.NativeType(self.w)))
 		#endif
 	}
-	public func toGLK() -> GLKQuaternion {
-		return GLKQuaternion(q: self.q)
-	}
+	#if !os(watchOS)
+		public func toGLK() -> GLKQuaternion {
+			return GLKQuaternion(q: self.q)
+		}
+	#endif // !watchOS
 }
 extension simd_quatf {
 	public func toSCN() -> SCNQuaternion {
@@ -109,11 +115,13 @@ extension simd_quatd {
 		#endif
 	}
 }
-extension GLKQuaternion {
-	public func toSCN() -> SCNQuaternion {
-		return SCNQuaternion(q: self.q)
+#if !os(watchOS)
+	extension GLKQuaternion {
+		public func toSCN() -> SCNQuaternion {
+			return SCNQuaternion(q: self.q)
+		}
 	}
-}
+#endif // !watchOS
 
 extension SCNMatrix4 {
 	public func toSimd() -> float4x4 {
@@ -123,9 +131,11 @@ extension SCNMatrix4 {
 			return float4x4(SCNMatrix4ToMat4(self))
 		#endif
 	}
-	public func toGLK() -> GLKMatrix4 {
-		return SCNMatrix4ToGLKMatrix4(self)
-	}
+	#if !os(watchOS)
+		public func toGLK() -> GLKMatrix4 {
+			return SCNMatrix4ToGLKMatrix4(self)
+		}
+	#endif // !watchOS
 }
 extension float4x4 {
 	public func toSCN() -> SCNMatrix4 {
@@ -136,11 +146,13 @@ extension float4x4 {
 		#endif
 	}
 }
-extension GLKMatrix4 {
-	public func toSCN() -> SCNMatrix4 {
-		return SCNMatrix4FromGLKMatrix4(self)
+#if !os(watchOS)
+	extension GLKMatrix4 {
+		public func toSCN() -> SCNMatrix4 {
+			return SCNMatrix4FromGLKMatrix4(self)
+		}
 	}
-}
+#endif // !watchOS
 
 
 
@@ -343,90 +355,92 @@ extension SCNVector3 : Equatable
 
 
 
-// MARK: SCNQuaternion Extensions
+#if !os(watchOS)
+	// MARK: SCNQuaternion Extensions
 
-// NOTE: Methods below are ordered alphabetically (by base operation name).
-// 	Decided that this is better than grouping by category because those groupings are somewhat subjective, change with each Swift version (if based on protocols), and this just seemed simpler.  Maybe I'll reorg this in the future though.
-extension SCNQuaternion
-{
-	public static let identity:SCNQuaternion = GLKQuaternionIdentity.toSCN()
-	public static let identityFacingVector:SCNVector3 = SCNVector3(0, 0, -1)
-	public static let identityUpVector:SCNVector3 = SCNVector3(0, 1, 0)
-	
-	
-	public init(from a:SCNVector3, to b:SCNVector3, opposing180Axis:SCNVector3=identityUpVector) {
-		let aNormal = a.normalized(), bNormal = b.normalized()
-		let dotProduct = aNormal.dotProduct(bNormal)
-		if dotProduct >= 1.0 {
-			self = GLKQuaternionIdentity.toSCN()
+	// NOTE: Methods below are ordered alphabetically (by base operation name).
+	// 	Decided that this is better than grouping by category because those groupings are somewhat subjective, change with each Swift version (if based on protocols), and this just seemed simpler.  Maybe I'll reorg this in the future though.
+	extension SCNQuaternion
+	{
+		public static let identity:SCNQuaternion = GLKQuaternionIdentity.toSCN()
+		public static let identityFacingVector:SCNVector3 = SCNVector3(0, 0, -1)
+		public static let identityUpVector:SCNVector3 = SCNVector3(0, 1, 0)
+		
+		
+		public init(from a:SCNVector3, to b:SCNVector3, opposing180Axis:SCNVector3=identityUpVector) {
+			let aNormal = a.normalized(), bNormal = b.normalized()
+			let dotProduct = aNormal.dotProduct(bNormal)
+			if dotProduct >= 1.0 {
+				self = GLKQuaternionIdentity.toSCN()
+			}
+			else if dotProduct < (-1.0 + SCNFloat.leastNormalMagnitude) {
+				self = GLKQuaternionMakeWithAngleAndVector3Axis(Float.pi, opposing180Axis.toGLK()).toSCN()
+			}
+			else {
+				// from: https://bitbucket.org/sinbad/ogre/src/9db75e3ba05c/OgreMain/include/OgreVector3.h?fileviewer=file-view-default#OgreVector3.h-651
+				// looks to be explained at: http://lolengine.net/blog/2013/09/18/beautiful-maths-quaternion-from-vectors
+				let s = sqrt((1.0 + dotProduct) * 2.0)
+				let xyz = aNormal.crossProduct(bNormal) / s
+				self = SCNQuaternion(xyz.x, xyz.y, xyz.z, (s * 0.5))
+			}
 		}
-		else if dotProduct < (-1.0 + SCNFloat.leastNormalMagnitude) {
-			self = GLKQuaternionMakeWithAngleAndVector3Axis(Float.pi, opposing180Axis.toGLK()).toSCN()
+		
+		
+		public init(angle angle_rad:SCNFloat, axis axisVector:SCNVector3) {
+			self = GLKQuaternionMakeWithAngleAndVector3Axis(Float(angle_rad), axisVector.toGLK()).toSCN()
 		}
-		else {
-			// from: https://bitbucket.org/sinbad/ogre/src/9db75e3ba05c/OgreMain/include/OgreVector3.h?fileviewer=file-view-default#OgreVector3.h-651
-			// looks to be explained at: http://lolengine.net/blog/2013/09/18/beautiful-maths-quaternion-from-vectors
-			let s = sqrt((1.0 + dotProduct) * 2.0)
-			let xyz = aNormal.crossProduct(bNormal) / s
-			self = SCNQuaternion(xyz.x, xyz.y, xyz.z, (s * 0.5))
+		
+		
+		// MARK: Angle-Axis
+		
+		public func angleAxis() -> (SCNFloat, SCNVector3) {
+			let self_glk = self.toGLK()
+			let angle = SCNFloat(GLKQuaternionAngle(self_glk))
+			let axis = GLKQuaternionAxis(self_glk).toSCN()
+			return (angle, axis)
+		}
+		
+		// MARK: Delta
+		
+		public func delta(_ other:SCNQuaternion) -> SCNQuaternion {
+			return -self * other
+		}
+		
+		// MARK: Invert
+		
+		public static prefix func - (q:SCNQuaternion) -> SCNQuaternion { return q.inverted() }
+		public func inverted() -> SCNQuaternion {
+			return GLKQuaternionInvert(self.toGLK()).toSCN()
+		}
+		public mutating func invert() {
+			self = self.inverted()
+		}
+		
+		// MARK: Multiply
+		
+		public static func * (a:SCNQuaternion, b:SCNQuaternion) -> SCNQuaternion { return a.multiplied(by: b) }
+		public func multiplied(by other:SCNQuaternion) -> SCNQuaternion {
+			return GLKQuaternionMultiply(self.toGLK(), other.toGLK()).toSCN()
+		}
+		public static func *= (q:inout SCNQuaternion, o:SCNQuaternion) { q.multiply(by: o) }
+		public mutating func multiply(by other:SCNQuaternion) {
+			self = self.multiplied(by: other)
+		}
+		
+		// MARK: Normalize
+		
+		public mutating func normalize() {
+			self = GLKQuaternionNormalize(self.toGLK()).toSCN()
+		}
+		
+		// MARK: Rotate
+		
+		public static func * (q:SCNQuaternion, v:SCNVector3) -> SCNVector3 { return q.rotate(vector: v) }
+		public func rotate(vector:SCNVector3) -> SCNVector3 {
+			return GLKQuaternionRotateVector3(self.toGLK(), vector.toGLK()).toSCN()
 		}
 	}
-	
-	
-	public init(angle angle_rad:SCNFloat, axis axisVector:SCNVector3) {
-		self = GLKQuaternionMakeWithAngleAndVector3Axis(Float(angle_rad), axisVector.toGLK()).toSCN()
-	}
-	
-	
-	// MARK: Angle-Axis
-	
-	public func angleAxis() -> (SCNFloat, SCNVector3) {
-		let self_glk = self.toGLK()
-		let angle = SCNFloat(GLKQuaternionAngle(self_glk))
-		let axis = GLKQuaternionAxis(self_glk).toSCN()
-		return (angle, axis)
-	}
-	
-	// MARK: Delta
-	
-	public func delta(_ other:SCNQuaternion) -> SCNQuaternion {
-		return -self * other
-	}
-	
-	// MARK: Invert
-	
-	public static prefix func - (q:SCNQuaternion) -> SCNQuaternion { return q.inverted() }
-	public func inverted() -> SCNQuaternion {
-		return GLKQuaternionInvert(self.toGLK()).toSCN()
-	}
-	public mutating func invert() {
-		self = self.inverted()
-	}
-	
-	// MARK: Multiply
-	
-	public static func * (a:SCNQuaternion, b:SCNQuaternion) -> SCNQuaternion { return a.multiplied(by: b) }
-	public func multiplied(by other:SCNQuaternion) -> SCNQuaternion {
-		return GLKQuaternionMultiply(self.toGLK(), other.toGLK()).toSCN()
-	}
-	public static func *= (q:inout SCNQuaternion, o:SCNQuaternion) { q.multiply(by: o) }
-	public mutating func multiply(by other:SCNQuaternion) {
-		self = self.multiplied(by: other)
-	}
-	
-	// MARK: Normalize
-	
-	public mutating func normalize() {
-		self = GLKQuaternionNormalize(self.toGLK()).toSCN()
-	}
-	
-	// MARK: Rotate
-	
-	public static func * (q:SCNQuaternion, v:SCNVector3) -> SCNVector3 { return q.rotate(vector: v) }
-	public func rotate(vector:SCNVector3) -> SCNVector3 {
-		return GLKQuaternionRotateVector3(self.toGLK(), vector.toGLK()).toSCN()
-	}
-}
+#endif // !watchOS
 
 
 
