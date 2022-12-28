@@ -12,17 +12,17 @@ import simd
 /// Because of this, we need to do some finagling to get these extension to work on all platform— and a `SCNFloat` typealias is the cleanest way I found to minimize the amount of `#if` junk below.
 #if os(macOS)
 	#if (arch(x86_64))
-		public typealias SCNSimdFloat3 = double3
-		public typealias SCNSimdFloat4 = double4
+		public typealias SCNSimdFloat3 = simd_double3
+		public typealias SCNSimdFloat4 = simd_double4
 		public typealias SCNSimdQuat = simd_quatd
 	#else
-		public typealias SCNSimdFloat3 = float3
-		public typealias SCNSimdFloat4 = float4
+		public typealias SCNSimdFloat3 = simd_float3
+		public typealias SCNSimdFloat4 = simd_float4
 		public typealias SCNSimdQuat = simd_quatf
 	#endif
 #else
-	public typealias SCNSimdFloat3 = float3
-	public typealias SCNSimdFloat4 = float4
+	public typealias SCNSimdFloat3 = simd_float3
+	public typealias SCNSimdFloat4 = simd_float4
 	public typealias SCNSimdQuat = simd_quatf
 	
 	extension SCNFloat
@@ -48,7 +48,7 @@ extension SCNVector3 {
 		return SCNVector3ToGLKVector3(self)
 	}
 }
-extension float3 {
+extension simd_float3 {
 	public func toSCN() -> SCNVector3 {
 		#if swift(>=4.0)
 			return SCNVector3(self)
@@ -57,7 +57,7 @@ extension float3 {
 		#endif
 	}
 }
-extension double3 {
+extension simd_double3 {
 	public func toSCN() -> SCNVector3 {
 		#if swift(>=4.0)
 			return SCNVector3(self)
